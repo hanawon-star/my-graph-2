@@ -24,7 +24,7 @@ def load_data():
 
 df = load_data()
 
-# 데이터 요약 정보 확인 (선택 사항)
+# 데이터 요약 정보 확인
 with st.expander("📄 원본 데이터 미리보기"):
     st.dataframe(df)
 
@@ -64,21 +64,26 @@ st.info("💡 **이 그래프로 알 수 있는 것:** 개봉한 박스오피스
 st.divider()
 
 # ---------------------------------------------------------
-# 추가 탐색 섹션 (추후 다른 분포/관계 그래프 추가 공간)
+# 섹션 2: 장르 및 영화별 총 관객수 분포 (트리맵)
 # ---------------------------------------------------------
-st.header("2. 관객 수와 스크린 수의 관계")
+st.header("2. 장르별 영화 계층 및 총 관객수 분포")
 
-# 예시: 개봉일 스크린수와 총 관객수 간 상관관계 산점도
-fig_scatter = px.scatter(
+# Plotly 트리맵 차트 생성 (장르 -> 영화명 계층 구조)
+fig_treemap = px.treemap(
     df,
-    x='first_scrn',
-    y='total_audi',
+    path=[px.Constant("전체 장르"), 'genre', 'movieNm'],
+    values='total_audi',
     color='genre',
-    hover_data=['movieNm'],
-    labels={'first_scrn': '개봉일 스크린수', 'total_audi': '총 관객수', 'genre': '장르'},
-    title="개봉일 스크린수 vs 총 관객수"
+    title="장르 및 영화별 총 관객수 (크기: 총 관객수)"
 )
 
-st.plotly_chart(fig_scatter, use_container_width=True)
+# 마우스 오버 시 영화명과 총 관객수 형태 표시
+fig_treemap.update_traces(
+    hovertemplate="<b>영화명/구분:</b> %{label}<br><b>총 관객수:</b> %{value:,}명<extra></extra>"
+)
 
-st.info("💡 **이 그래프로 알 수 있는 것:** 개봉일 스크린수가 확보될수록 총 관객수가 증가하는 경향을 보이지만, 장르 및 영화별 흥행 성과에 따라 상이할 수 있습니다.")
+# Streamlit에 그래프 출력
+st.plotly_chart(fig_treemap, use_container_width=True)
+
+# 그래프 해석 및 인사이트 구역
+st.info("💡 **이 그래프로 알 수 있는 것:** 각 장르가 전체 관객수에서 차지하는 지분과, 해당 장르 내에서 어떤 영화가 흥행을 주도했는지 면적의 크기로 한눈에 비교할 수 있습니다.")
