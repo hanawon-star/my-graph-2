@@ -124,3 +124,41 @@ st.info(
     f"💡 **이 그래프로 알 수 있는 것:** 대부분의 영화는 관객수 하위 구간(약 100만~300만 명 이하)에 촘촘히 몰려 있는 양극화 구조를 보이며, "
     f"가장 관객 수가 많은 영화는 **'{top_movie_name}'**(총 {top_movie_audi:,}명)입니다."
 )
+
+st.divider()
+
+# ---------------------------------------------------------
+# 섹션 4: 개봉일 스크린수와 총 관객수의 관계 (산점도)
+# ---------------------------------------------------------
+st.header("4. 개봉일 스크린수와 총 관객수의 관계")
+
+# Plotly 산점도 생성
+fig_scatter = px.scatter(
+    df,
+    x='first_scrn',
+    y='total_audi',
+    color='genre',
+    hover_name='movieNm',
+    title="개봉일 스크린수 vs 총 관객수",
+    labels={
+        'first_scrn': '개봉일 스크린수',
+        'total_audi': '총 관객수',
+        'genre': '장르'
+    }
+)
+
+# 마우스 오버 툴팁 서식 설정
+fig_scatter.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br><br>개봉일 스크린수: %{x:,}개<br>총 관객수: %{y:,}명<extra></extra>"
+)
+
+fig_scatter.update_layout(
+    xaxis_title="개봉일 스크린수 (개)",
+    yaxis_title="총 관객수 (명)"
+)
+
+# Streamlit에 그래프 출력
+st.plotly_chart(fig_scatter, use_container_width=True)
+
+# 그래프 해석 및 인사이트 구역
+st.info("💡 **이 그래프로 알 수 있는 것:** 개봉일 스크린수가 많을수록 총 관객수도 함께 증가하는 양의 상관관계를 보이며, 장르에 따라서도 분포 차이가 나타남을 확인할 수 있습니다.")
