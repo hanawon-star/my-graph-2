@@ -162,3 +162,47 @@ st.plotly_chart(fig_scatter, use_container_width=True)
 
 # 그래프 해석 및 인사이트 구역
 st.info("💡 **이 그래프로 알 수 있는 것:** 개봉일 스크린수가 많을수록 총 관객수도 함께 증가하는 양의 상관관계를 보이며, 장르에 따라서도 분포 차이가 나타남을 확인할 수 있습니다.")
+
+st.divider()
+
+# ---------------------------------------------------------
+# 섹션 5: 주요 장르별 총 관객수 분포 (박스플롯)
+# ---------------------------------------------------------
+st.header("5. 주요 장르별 총 관객수 분포 (10편 이상 장르)")
+
+# 영화 수 10편 이상인 장르만 필터링
+genre_counts_series = df['genre'].value_counts()
+major_genres = genre_counts_series[genre_counts_series >= 10].index
+df_filtered = df[df['genre'].isin(major_genres)]
+
+# Plotly 상자 그림(Box Plot) 생성
+fig_box = px.box(
+    df_filtered,
+    x='genre',
+    y='total_audi',
+    color='genre',
+    points='outliers',
+    hover_name='movieNm',
+    title="주요 장르별 총 관객수 박스플롯",
+    labels={
+        'genre': '장르',
+        'total_audi': '총 관객수'
+    }
+)
+
+# 툴팁 및 마우스 오버 서식 설정
+fig_box.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br>총 관객수: %{y:,}명<extra></extra>"
+)
+
+fig_box.update_layout(
+    xaxis_title="장르",
+    yaxis_title="총 관객수 (명)",
+    showlegend=False
+)
+
+# Streamlit에 그래프 출력
+st.plotly_chart(fig_box, use_container_width=True)
+
+# 그래프 해석 및 인사이트 구역
+st.info("💡 **이 그래프로 알 수 있는 것:** 주요 장르별 관객수의 중위수와 편차를 한눈에 볼 수 있으며, 상자 밖으로 튀어나온 이상치(Outlier) 점들을 통해 장르 평균을 뛰어넘는 대흥행작들을 식별할 수 있습니다.")
