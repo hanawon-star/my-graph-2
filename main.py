@@ -48,7 +48,7 @@ fig_donut = px.pie(
     title="장르별 영화 비율 및 편수"
 )
 
-# 마우스 오버 시 편수와 비율이 모두 표기되도록 설정
+# 마우스 오버 시 편수와 비율 표기
 fig_donut.update_traces(
     hoverinfo='label+value+percent',
     textinfo='percent+label',
@@ -77,7 +77,7 @@ fig_treemap = px.treemap(
     title="장르 및 영화별 총 관객수 (크기: 총 관객수)"
 )
 
-# 마우스 오버 시 영화명과 총 관객수 형태 표시
+# 마우스 오버 시 영화명과 총 관객수 표시
 fig_treemap.update_traces(
     hovertemplate="<b>영화명/구분:</b> %{label}<br><b>총 관객수:</b> %{value:,}명<extra></extra>"
 )
@@ -87,3 +87,40 @@ st.plotly_chart(fig_treemap, use_container_width=True)
 
 # 그래프 해석 및 인사이트 구역
 st.info("💡 **이 그래프로 알 수 있는 것:** 각 장르가 전체 관객수에서 차지하는 지분과, 해당 장르 내에서 어떤 영화가 흥행을 주도했는지 면적의 크기로 한눈에 비교할 수 있습니다.")
+
+st.divider()
+
+# ---------------------------------------------------------
+# 섹션 3: 총 관객수 분포 (히스토그램)
+# ---------------------------------------------------------
+st.header("3. 총 관객수 분포")
+
+# Plotly 히스토그램 생성
+fig_hist = px.histogram(
+    df,
+    x='total_audi',
+    nbins=30,
+    title="총 관객수 구간별 영화 편수 분포",
+    labels={'total_audi': '총 관객수', 'count': '영화 수'},
+    color_discrete_sequence=['#636EFA']
+)
+
+fig_hist.update_layout(
+    xaxis_title="총 관객수 (명)",
+    yaxis_title="영화 수 (편)",
+    bargap=0.1
+)
+
+# Streamlit에 그래프 출력
+st.plotly_chart(fig_hist, use_container_width=True)
+
+# 데이터 기반 최고 관객수 영화 정보 추출
+top_movie = df.loc[df['total_audi'].idxmax()]
+top_movie_name = top_movie['movieNm']
+top_movie_audi = top_movie['total_audi']
+
+# 그래프 해석 및 인사이트 구역
+st.info(
+    f"💡 **이 그래프로 알 수 있는 것:** 대부분의 영화는 관객수 하위 구간(약 100만~300만 명 이하)에 촘촘히 몰려 있는 양극화 구조를 보이며, "
+    f"가장 관객 수가 많은 영화는 **'{top_movie_name}'**(총 {top_movie_audi:,}명)입니다."
+)
