@@ -247,3 +247,32 @@ st.plotly_chart(fig_bubble, use_container_width=True)
 
 # 그래프 해석 및 인사이트 구역
 st.info("💡 **이 그래프로 알 수 있는 것:** 개봉일 스크린수와 총 관객수 외에도 원의 크기를 통해 개봉 첫 주 초반 흥행 동력(첫 주 관객수)이 최종 총 관객수에 미친 영향을 다차원적으로 파악할 수 있습니다.")
+
+st.divider()
+
+# ---------------------------------------------------------
+# 섹션 7: 제작 국가 및 장르별 영화 편수 (선버스트 차트)
+# ---------------------------------------------------------
+st.header("7. 제작 국가 및 장르별 영화 편수 분포 (선버스트 차트)")
+
+# 국가별, 장르별 영화 편수 집계
+nation_genre_counts = df.groupby(['nation', 'genre']).size().reset_index(name='movie_count')
+
+# Plotly 선버스트 차트 생성 (국가 -> 장르 계층 구조)
+fig_sunburst = px.sunburst(
+    nation_genre_counts,
+    path=['nation', 'genre'],
+    values='movie_count',
+    title="제작 국가 및 장르별 영화 편수 (크기: 영화 편수)"
+)
+
+# 마우스 오버 툴팁 서식 설정
+fig_sunburst.update_traces(
+    hovertemplate="<b>구분:</b> %{label}<br><b>영화 편수:</b> %{value}편<extra></extra>"
+)
+
+# Streamlit에 그래프 출력
+st.plotly_chart(fig_sunburst, use_container_width=True)
+
+# 그래프 해석 및 인사이트 구역
+st.info("💡 **이 그래프로 알 수 있는 것:** 각 제작 국가가 전체 영화 중 차지하는 비율과 함께, 해당 국가 내에서 어떤 장르의 영화가 주로 개봉했는지 계층적인 원형 구조로 쉽게 파악할 수 있습니다.")
