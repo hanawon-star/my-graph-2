@@ -206,3 +206,44 @@ st.plotly_chart(fig_box, use_container_width=True)
 
 # 그래프 해석 및 인사이트 구역
 st.info("💡 **이 그래프로 알 수 있는 것:** 주요 장르별 관객수의 중위수와 편차를 한눈에 볼 수 있으며, 상자 밖으로 튀어나온 이상치(Outlier) 점들을 통해 장르 평균을 뛰어넘는 대흥행작들을 식별할 수 있습니다.")
+
+st.divider()
+
+# ---------------------------------------------------------
+# 섹션 6: 스크린수, 총 관객수 및 첫 주 관객수 (버블 차트)
+# ---------------------------------------------------------
+st.header("6. 개봉일 스크린수, 총 관객수 및 첫 주 관객수의 관계 (버블 차트)")
+
+# Plotly 버블 차트 생성 (size=first_week_audi)
+fig_bubble = px.scatter(
+    df,
+    x='first_scrn',
+    y='total_audi',
+    size='first_week_audi',
+    color='genre',
+    hover_name='movieNm',
+    size_max=40,
+    title="개봉일 스크린수 vs 총 관객수 (원 크기: 개봉 첫 주 관객수)",
+    labels={
+        'first_scrn': '개봉일 스크린수',
+        'total_audi': '총 관객수',
+        'genre': '장르',
+        'first_week_audi': '첫 주 관객수'
+    }
+)
+
+# 마우스 오버 툴팁 서식 설정 (첫 주 관객수 포함)
+fig_bubble.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br><br>개봉일 스크린수: %{x:,}개<br>총 관객수: %{y:,}명<br>첫 주 관객수: %{marker.size:,}명<extra></extra>"
+)
+
+fig_bubble.update_layout(
+    xaxis_title="개봉일 스크린수 (개)",
+    yaxis_title="총 관객수 (명)"
+)
+
+# Streamlit에 그래프 출력
+st.plotly_chart(fig_bubble, use_container_width=True)
+
+# 그래프 해석 및 인사이트 구역
+st.info("💡 **이 그래프로 알 수 있는 것:** 개봉일 스크린수와 총 관객수 외에도 원의 크기를 통해 개봉 첫 주 초반 흥행 동력(첫 주 관객수)이 최종 총 관객수에 미친 영향을 다차원적으로 파악할 수 있습니다.")
