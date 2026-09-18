@@ -18,8 +18,8 @@ def load_data():
     url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_movies.csv"
     df = pd.read_csv(url)
     
-    # genre 열 전처리: 세로막대(|) 기호로 묶인 여러 장르 중 첫 번째 장르만 추출
-    df['genre'] = df['genre'].astype(str).apply(lambda x: x.split('|')[0].strip())
+    # genre 열 전처리: .str 메서드를 사용해 첫 번째 장르만 추출 (최신 pandas 오류 해결)
+    df['genre'] = df['genre'].fillna('').astype(str).str.split('|').str[0].str.strip()
     return df
 
 df = load_data()
@@ -232,7 +232,7 @@ fig_bubble = px.scatter(
     }
 )
 
-# 마우스 오버 툴팁 서식 설정 (첫 주 관객수 포함)
+# 마우스 오버 툴팁 서식 설정
 fig_bubble.update_traces(
     hovertemplate="<b>%{hovertext}</b><br><br>개봉일 스크린수: %{x:,}개<br>총 관객수: %{y:,}명<br>첫 주 관객수: %{marker.size:,}명<extra></extra>"
 )
@@ -284,7 +284,6 @@ st.divider()
 # ---------------------------------------------------------
 st.header("8. 인기 장르 상위 5개의 3D 지표 비교 (스크린수 x 상영횟수 x 총관객수)")
 
-# 데이터셋 내 연령/성별 열 부재 관련 안내 메시지
 st.caption("※ 원본 데이터셋에 연령 및 성별 정보가 없어, 영화 관련 주요 3개 수치 지표(스크린수, 상영횟수, 총관객수)로 3D 축을 구성했습니다.")
 
 # 영화 편수 기준 상위 5개 장르 추출
@@ -334,5 +333,4 @@ for i, genre_name in enumerate(top5_genres):
         
         st.plotly_chart(fig_3d, use_container_width=True)
         
-        # 인사이트 문구 추가
         st.info(f"💡 **이 그래프로 알 수 있는 것:** {genre_name} 장르 상위 10개 영화의 초기 스크린/상영 횟수 확보 수준과 최종 총 관객수 간의 3차원적 관계를 입체적으로 비교할 수 있습니다.")
