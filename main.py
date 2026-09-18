@@ -18,8 +18,12 @@ def load_data():
     url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_movies.csv"
     df = pd.read_csv(url)
     
-    # genre 열 전처리: .str 메서드를 사용해 첫 번째 장르만 추출 (최신 pandas 오류 해결)
-    df['genre'] = df['genre'].fillna('').astype(str).str.split('|').str[0].str.strip()
+    # genre 열 전처리: 문자열 변환 후 세로막대(|) 기준 첫 번째 장르 추출 및 정제
+    df['genre'] = df['genre'].astype(str).str.split('|').str[0].str.strip()
+    
+    # 숫자로 되어 있는 장르 값이나 빈 값(nan 등)을 처리
+    df['genre'] = df['genre'].replace({'nan': '기타', '': '기타'})
+    
     return df
 
 df = load_data()
